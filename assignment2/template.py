@@ -62,6 +62,7 @@ class HMM:
         """
         raise NotImplementedError('HMM.emission_model')
         # TODO prepare data
+        # Getting Started: Delete this comment
 
         # Don't forget to lowercase the observation otherwise it mismatches the test data
         # Do NOT add <s> or </s> to the input sentences
