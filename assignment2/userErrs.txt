@@ -1,12 +1,5 @@
-The following line threw a NotImplementedError exception: HMM.emission_model:
+The following line threw a NameError exception: name 'states' is not defined:
 model.train()
--------
-The following line threw a NotImplementedError exception: HMM.elprob:
-e_sample=model.elprob('VERB','is')
--------
-The following lines threw a NameError exception: name 'e_sample' is not defined:
-if not (type(e_sample)==float and e_sample<=0.0):
-    print('elprob value (%s) must be a log probability'%e_sample,file=sys.stderr)
 -------
 The following line threw a NotImplementedError exception: HMM.tlprob:
 t_sample=model.tlprob('VERB','VERB')

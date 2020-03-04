@@ -1,7 +1,7 @@
-a1a=[]
-a1b=
-a1c=
-a1d=
+a1a=['.', 'ADJ', 'ADP', 'ADV', 'CONJ', 'DET', 'NOUN', 'NUM', 'PRON', 'PRT', 'VERB', 'X', 'is']
+a1b=2649
+a1c=0.0
+a1d='function'
 a2a=
 a2b=
 a4a3=0.0

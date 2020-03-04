@@ -73,23 +73,27 @@ class HMM:
         :return: The emission probability distribution and a list of the states
         :rtype: Tuple[ConditionalProbDist, list(str)]
         """
-        raise NotImplementedError('HMM.emission_model')
+        #raise NotImplementedError('HMM.emission_model')
         # TODO prepare data
         # Add Comment Again
         # Don't forget to lowercase the observation otherwise it mismatches the test data
         # Do NOT add <s> or </s> to the input sentences
 
         # Concats all the internal lists in train_data into one long list to be processed
-        new_data = []
-        for x in range(len(train_data)):
-            new_data += train_data[x]
 
-        data = [(tag, word.lower()) for (word, tag) in new_data] #fixed
+        data = [] #fixed
+        for tagged_sentence in train_data:
+            sentence_data = [(t, w.lower()) for (w, t) in tagged_sentence]
+            data.extend(sentence_data)
+
+        estimator = lambda fd: LidstoneProbDist(fd, 0.01, fd.B() + 1)
+
 
         # TODO compute the emission model
         emission_FD = ConditionalFreqDist(data) #fixed
-        self.emission_PD = ConditionalProbDist(emission_FD, LidstoneProbDist, 0.01) #fixed
-        self.states = emission_FD.keys() #fixed
+        self.emission_PD = ConditionalProbDist(emission_FD, estimator) #fixed
+        self.states = self.emission_PD.keys() #fixed
+        states.sort()
 
         return self.emission_PD, self.states
 
@@ -106,8 +110,8 @@ class HMM:
         :return: log base 2 of the estimated emission probability
         :rtype: float
         """
-        raise NotImplementedError('HMM.elprob')
-        return ... # fixme
+        #raise NotImplementedError('HMM.elprob')
+        return -self.emission_PD[word].logprob(state) # fixed
 
     # Compute transition model using ConditionalProbDist with a LidstonelprobDist estimator.
     # See comments for emission_model above for details on the estimator.
@@ -159,7 +163,7 @@ class HMM:
         Trains the HMM from the training data
         """
         self.emission_model(self.train_data)
-        self.transition_model(self.train_data)
+        #self.transition_model(self.train_data)
 
     # Part B: Implementing the Viterbi algorithm.
 
