@@ -18,6 +18,19 @@ except NameError:
 from nltk.corpus import brown
 from nltk.tag import map_tag, tagset_mapping
 
+##### Self Imports
+
+# module for training a Hidden Markov Model and tagging sequences
+from nltk.tag.hmm import HiddenMarkovModelTagger
+
+# module for computing a Conditional Frequency Distribution
+from nltk.probability import ConditionalFreqDist
+
+# module for computing a Conditional Probability Distribution
+from nltk.probability import ConditionalProbDist, LidstoneProbDist
+
+##### End Self Imports
+
 if map_tag('brown', 'universal', 'NR-TL') != 'NOUN':
     # Out-of-date tagset, we add a few that we need
     tm=tagset_mapping('en-brown','universal')
@@ -65,12 +78,18 @@ class HMM:
         # Add Comment Again
         # Don't forget to lowercase the observation otherwise it mismatches the test data
         # Do NOT add <s> or </s> to the input sentences
-        data = 'fixme'
+
+        # Concats all the internal lists in train_data into one long list to be processed
+        new_data = []
+        for x in range(len(train_data)):
+            new_data += train_data[x]
+
+        data = [(tag, word.lower()) for (word, tag) in new_data] #fixed
 
         # TODO compute the emission model
-        emission_FD = 'fixme'
-        self.emission_PD = 'fixme'
-        self.states = 'fixme'
+        emission_FD = ConditionalFreqDist(data) #fixed
+        self.emission_PD = ConditionalProbDist(emission_FD, LidstoneProbDist, 0.01) #fixed
+        self.states = emission_FD.keys() #fixed
 
         return self.emission_PD, self.states
 
@@ -297,10 +316,10 @@ def answers():
 
     # Divide corpus into train and test data.
     test_size = 500
-    train_size = 0 # fixme
+    train_size = len(tagged_sentences_universal)-test_size # fixed
 
-    test_data_universal = tagged_sentences_universal[1:2] # fixme
-    train_data_universal = tagged_sentences_universal[3:4] # fixme
+    test_data_universal = tagged_sentences_universal[-test_size:] # fixed
+    train_data_universal = tagged_sentences_universal[:train_size] # fixed
 
     if hashlib.md5(''.join(map(lambda x:x[0],train_data_universal[0]+train_data_universal[-1]+test_data_universal[0]+test_data_universal[-1])).encode('utf-8')).hexdigest()!='164179b8e679e96b2d7ff7d360b75735':
         print('!!!test/train split (%s/%s) incorrect, most of your answers will be wrong hereafter!!!'%(len(train_data_universal),len(test_data_universal)),file=sys.stderr)
