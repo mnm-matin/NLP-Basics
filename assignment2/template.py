@@ -165,7 +165,7 @@ class HMM:
         Trains the HMM from the training data
         """
         self.emission_model(self.train_data)
-        # self.transition_model(self.train_data)
+        self.transition_model(self.train_data)
 
     # Part B: Implementing the Viterbi algorithm.
 
@@ -348,7 +348,6 @@ def answers():
     # Some preliminary sanity checks
     # Use these as a model for other checks
     e_sample = model.elprob('VERB', 'is')
-    print("hello")
     if not (type(e_sample) == float and e_sample <= 0.0):
         print('elprob value (%s) must be a log probability' % e_sample, file=sys.stderr)
 
