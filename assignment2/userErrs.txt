@@ -1,6 +1,3 @@
-The following line threw a NameError exception: name 'states' is not defined:
-model.train()
--------
 The following line threw a NotImplementedError exception: HMM.tlprob:
 t_sample=model.tlprob('VERB','VERB')
 -------

@@ -1,6 +1,6 @@
-a1a=['.', 'ADJ', 'ADP', 'ADV', 'CONJ', 'DET', 'NOUN', 'NUM', 'PRON', 'PRT', 'VERB', 'X', 'is']
+a1a=['.', 'ADJ', 'ADP', 'ADV', 'CONJ', 'DET', 'NOUN', 'NUM', 'PRON', 'PRT', 'VERB', 'X']
 a1b=2649
-a1c=0.0
+a1c=12.05988565013656
 a1d='function'
 a2a=
 a2b=
