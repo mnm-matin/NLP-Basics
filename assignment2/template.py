@@ -129,10 +129,6 @@ class HMM:
         """
         #raise NotImplementedError('HMM.transition_model')
         # TODO: prepare the data
-        data = []
-        for tagged_sentence in train_data:
-            sentence_data = [(t, w.lower()) for (w, t) in tagged_sentence]
-            data.extend(sentence_data)
 
         # The data object should be an array of tuples of conditions and observations,
         # in our case the tuples will be of the form (tag_(i),tag_(i+1)).
