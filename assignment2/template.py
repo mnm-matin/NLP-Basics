@@ -140,7 +140,7 @@ class HMM:
         data = []
         for s in train_data:
             data.append(('<s>', s[0][1]))  # Start symbol
-            for i in range((len(s) - 1)):
+            for i in range((len(s))-1):
                 data.append((s[i][1], s[i + 1][1]))
             data.append((s[-1][1], '</s>'))  # End symbol
 
