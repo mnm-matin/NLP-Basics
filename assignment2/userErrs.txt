@@ -1,10 +1,3 @@
-The following line threw a NotImplementedError exception: HMM.tlprob:
-t_sample = model.tlprob('VERB', 'VERB')
--------
-The following lines threw a NameError exception: name 't_sample' is not defined:
-if not (type(t_sample) == float and t_sample <= 0.0):
-    print('tlprob value (%s) must be a log probability' % t_sample, file=sys.stderr)
--------
 The following line threw a NotImplementedError exception: HMM.initialise:
 model.initialise(s[0])
 -------
