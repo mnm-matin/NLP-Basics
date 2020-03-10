@@ -1,21 +1,7 @@
-The following line threw a NotImplementedError exception: HMM.initialise:
+The following line threw a KeyError exception: 0:
 model.initialise(s[0])
 -------
-The following line threw a NotImplementedError exception: HMM.get_viterbi_value:
-v_sample = model.get_viterbi_value('VERB', 5)
--------
-The following lines threw a NameError exception: name 'v_sample' is not defined:
-if not (type(v_sample) == float and 0.0 <= v_sample):
-    print('viterbi value (%s) must be a cost' % v_sample, file=sys.stderr)
--------
-The following line threw a NotImplementedError exception: HMM.get_backpointer_value:
-b_sample = model.get_backpointer_value('VERB', 5)
--------
-The following lines threw a NameError exception: name 'b_sample' is not defined:
-if not (type(b_sample) == str and b_sample in model.states):
-    print('backpointer value (%s) must be a state name' % b_sample, file=sys.stderr)
--------
-The following lines threw a NotImplementedError exception: HMM.initialise:
+The following lines threw a KeyError exception: 0:
 for sentence in test_data_universal:
     s = [word.lower() for (word, tag) in sentence]
     model.initialise(s[0])
@@ -66,6 +52,11 @@ Exception in answer dict value computation:
     return eval(expr,gdict)
   File "<string>", line 1, in <module>
 Exception in answer dict value computation:
+    min((model.get_viterbi_value(s,-1) for s in model.states)) if len(model.states)>0 else FAILED -> TypeError("'<' not supported between instances of 'dict' and 'dict'")
+  File "/afs/inf.ed.ac.uk/user/s18/s1841215/PycharmProjects/FNLP2/assignment2/autodrive_embed.py", line 55, in safeEval
+    return eval(expr,gdict)
+  File "<string>", line 1, in <module>
+Exception in answer dict value computation:
     answer5 -> NameError("name 'answer5' is not defined")
   File "/afs/inf.ed.ac.uk/user/s18/s1841215/PycharmProjects/FNLP2/assignment2/autodrive_embed.py", line 55, in safeEval
     return eval(expr,gdict)
@@ -75,3 +66,9 @@ Exception in answer dict value computation:
   File "/afs/inf.ed.ac.uk/user/s18/s1841215/PycharmProjects/FNLP2/assignment2/autodrive_embed.py", line 55, in safeEval
     return eval(expr,gdict)
   File "<string>", line 1, in <module>
+Exception in initialising model in adrive2:
+KeyError(0)
+  File "/afs/inf.ed.ac.uk/user/s18/s1841215/PycharmProjects/FNLP2/assignment2/adrive2_embed.py", line 28, in a2answers
+    model.initialise('attack')
+  File "/afs/inf.ed.ac.uk/user/s18/s1841215/PycharmProjects/FNLP2/assignment2/template.py", line 207, in initialise
+    self.viterbi[0][state] = self.transition_PD['<s>'].logprob(state) + self.emission_PD[state].logprob(observation)

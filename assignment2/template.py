@@ -188,14 +188,27 @@ class HMM:
         :param observation: the first word in the sentence to tag
         :type observation: str
         """
-        raise NotImplementedError('HMM.initialise')
+        #raise NotImplementedError('HMM.initialise')
         # Initialise step 0 of viterbi, including
         #  transition from <s> to observation
         # use costs (-log-base-2 probabilities)
         # TODO
 
-        # Initialise step 0 of backpointer
-        # TODO
+        # Clearing Previous Values
+        #self.viterbi.clear()
+        #self.backpointer.clear()
+
+        self.viterbi = {}   # store index and values as dictionary
+        self.backpointer = {} # store index and values as dictionary
+
+        for state in self.states:
+
+            # initialise for transition from <s> , beginning of sentence
+            self.viterbi[state, 0] = self.transition_PD['<s>'].logprob(state) + self.emission_PD[state].logprob(observation)
+
+            # Initialise step 0 of backpointer
+            # TODO
+            self.backpointer[state, 0] = 0
 
     # Tag a new sentence using the trained model and already initialised data structures.
     # Use the models stored in the variables: self.emission_PD and self.transition_PD.
@@ -243,8 +256,8 @@ class HMM:
         :return: The value (a cost) for state as of step
         :rtype: float
         """
-        raise NotImplementedError('HMM.get_viterbi_value')
-        return ...  # fix me
+        #raise NotImplementedError('HMM.get_viterbi_value')
+        return self.viterbi  # fixed
 
     # Access function for testing the backpointer data structure
     # For example model.get_backpointer_value('VERB',2) might be 'NOUN'
@@ -261,8 +274,8 @@ class HMM:
         :return: The state name to go back to at step-1
         :rtype: str
         """
-        raise NotImplementedError('HMM.get_backpointer_value')
-        return ...  # fix me
+        #raise NotImplementedError('HMM.get_backpointer_value')
+        return self.backpointer  # fixed
 
 
 def answer_question4b():
