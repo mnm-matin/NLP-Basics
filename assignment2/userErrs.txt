@@ -1,17 +1,3 @@
-The following line threw a KeyError exception: 0:
-model.initialise(s[0])
--------
-The following lines threw a KeyError exception: 0:
-for sentence in test_data_universal:
-    s = [word.lower() for (word, tag) in sentence]
-    model.initialise(s[0])
-    tags = model.tag(s)
-    for ((word, gold), tag) in zip(sentence, tags):
-        if tag == gold:
-            pass
-        else:
-            pass
--------
 The following line threw a NotImplementedError exception: answer_question4b:
 bad_tags, good_tags, answer4b = answer_question4b()
 -------
@@ -52,7 +38,7 @@ Exception in answer dict value computation:
     return eval(expr,gdict)
   File "<string>", line 1, in <module>
 Exception in answer dict value computation:
-    min((model.get_viterbi_value(s,-1) for s in model.states)) if len(model.states)>0 else FAILED -> TypeError("'<' not supported between instances of 'dict' and 'dict'")
+    min((model.get_viterbi_value(s,-1) for s in model.states)) if len(model.states)>0 else FAILED -> TypeError("'<' not supported between instances of 'NoneType' and 'NoneType'")
   File "/afs/inf.ed.ac.uk/user/s18/s1841215/PycharmProjects/FNLP2/assignment2/autodrive_embed.py", line 55, in safeEval
     return eval(expr,gdict)
   File "<string>", line 1, in <module>
@@ -66,9 +52,3 @@ Exception in answer dict value computation:
   File "/afs/inf.ed.ac.uk/user/s18/s1841215/PycharmProjects/FNLP2/assignment2/autodrive_embed.py", line 55, in safeEval
     return eval(expr,gdict)
   File "<string>", line 1, in <module>
-Exception in initialising model in adrive2:
-KeyError(0)
-  File "/afs/inf.ed.ac.uk/user/s18/s1841215/PycharmProjects/FNLP2/assignment2/adrive2_embed.py", line 28, in a2answers
-    model.initialise('attack')
-  File "/afs/inf.ed.ac.uk/user/s18/s1841215/PycharmProjects/FNLP2/assignment2/template.py", line 207, in initialise
-    self.viterbi[0][state] = self.transition_PD['<s>'].logprob(state) + self.emission_PD[state].logprob(observation)

@@ -98,6 +98,9 @@ class HMM:
         self.emission_PD = ConditionalProbDist(emission_FD, estimator)  # fixed
         self.states = list(emission_FD.keys())  # fixed
 
+        print("states")
+        print (self.states)
+
         return self.emission_PD, self.states
 
     # Access function for testing the emission model
@@ -127,7 +130,8 @@ class HMM:
         :return: The transition probability distribution
         :rtype: ConditionalProbDist
         """
-        #raise NotImplementedError('HMM.transition_model')
+
+        # raise NotImplementedError('HMM.transition_model')
         # TODO: prepare the data
 
         # The data object should be an array of tuples of conditions and observations,
@@ -140,7 +144,7 @@ class HMM:
         data = []
         for s in train_data:
             data.append(('<s>', s[0][1]))  # Start symbol
-            for i in range((len(s))-1):
+            for i in range((len(s)) - 1):
                 data.append((s[i][1], s[i + 1][1]))
             data.append((s[-1][1], '</s>'))  # End symbol
 
@@ -164,7 +168,7 @@ class HMM:
         :return: log base 2 of the estimated transition probability
         :rtype: float
         """
-        #raise NotImplementedError('HMM.tlprob')
+        # raise NotImplementedError('HMM.tlprob')
         return self.transition_PD[state1].logprob(state2)  # fixed
 
     # Train the HMM
@@ -188,23 +192,22 @@ class HMM:
         :param observation: the first word in the sentence to tag
         :type observation: str
         """
-        #raise NotImplementedError('HMM.initialise')
+        # raise NotImplementedError('HMM.initialise')
         # Initialise step 0 of viterbi, including
         #  transition from <s> to observation
         # use costs (-log-base-2 probabilities)
         # TODO
 
         # Clearing Previous Values
-        #self.viterbi.clear()
-        #self.backpointer.clear()
+        # self.viterbi.clear()
+        # self.backpointer.clear()
 
-        self.viterbi = {}   # store index and values as dictionary
-        self.backpointer = {} # store index and values as dictionary
+        self.viterbi = {}  # store index and values as dictionary
+        self.backpointer = {}  # store index and values as dictionary
 
         for state in self.states:
-
             # initialise for transition from <s> , beginning of sentence
-            self.viterbi[state, 0] = self.transition_PD['<s>'].logprob(state) + self.emission_PD[state].logprob(observation)
+            self.viterbi[state, 0] = self.tlprob('<s>', state) + self.elprob(state, observation)
 
             # Initialise step 0 of backpointer
             # TODO
@@ -222,22 +225,83 @@ class HMM:
         :type observations: list(str)
         :return: List of tags corresponding to each word of the input
         """
-        raise NotImplementedError('HMM.tag')
+        # raise NotImplementedError('HMM.tag')
         tags = []
 
-        for t in ...:  # fixme to iterate over steps
-            for s in ...:  # fixme to iterate over states
-                pass  # fixme to update the viterbi and backpointer data structures
-                #  Use costs, not probabilities
+        index = 0
+        current_decision = []
+
+        for t in range(1, len(observations)):
+            for state in self.states:
+
+                # Initialise variables storing max and argmax
+                max_prob = -float('inf')
+                max_i = 0
+
+                # LogProbability of the t^th word given this state
+                b_j = self.emission_PD[state].logprob(observations[t])
+
+                for i in range(len(self.states)):
+                    # Suppose past_state is the i^th state
+                    past_state = self.states[i]
+                    # Viterbi[s',t-1]
+                    viterbi_ij = self.viterbi[past_state, t - 1]
+                    # Probability of new state being state given the past_state
+                    a_ij = self.transition_PD[past_state].logprob(state)
+                    # logProbability of this state in t^th place
+                    prob_ij = viterbi_ij + a_ij + b_j
+
+                    # Check if prob is bigger than previous ones, if it is, update
+                    if prob_ij > max_prob:
+                        max_prob = prob_ij
+                        max_i = i
+
+                # Update viterbi with max -logProbability
+                self.viterbi[state, t] = max_prob
+                # Update backpointer with argmax -logProbability
+                self.backpointer[state, t] = max_i
 
         # TODO
         # Add a termination step with cost based solely on cost of transition to </s> , end of sentence.
+        T = len(observations)
 
         # TODO
         # Reconstruct the tag sequence using the backpointer list.
         # Return the tag sequence corresponding to the best path as a list.
         # The order should match that of the words in the sentence.
-        tags = ...  # fixme
+
+        # Initialise variables storing max and argmax
+        max_i = 0
+        max_prob = -float('inf')
+
+        # Iterate over states to get most probable ending state
+        for state in self.states:
+            viterbi_iT = self.viterbi[state, T - 1]
+            a_iT = self.transition_PD[state].logprob('</s>')
+            prob_iT = viterbi_iT + a_iT
+
+            # Check if prob is bigger than previous ones, if it is, update
+            if prob_iT > max_prob:
+                max_prob = prob_iT
+                max_i = self.states.index(state)
+
+        # Update viterbi with max -logProbability
+        self.viterbi['</s>', T] = max_prob
+        # Update backpointer with argmax -logProbability
+        self.backpointer['</s>', T] = max_i
+
+        # Reconstruct the tag sequence using the backpointer
+        tag = '</s>'
+        t = T
+        tags_reverse = []
+        for w in range(len(observations)):
+            backpointer = self.backpointer[tag, t]
+            tag = self.states[backpointer]
+            tags_reverse.append(tag)
+            t -= 1
+
+        # Reverse list to match order of words
+        tags = list(reversed(tags_reverse))  # fixed
 
         return tags
 
@@ -256,8 +320,8 @@ class HMM:
         :return: The value (a cost) for state as of step
         :rtype: float
         """
-        #raise NotImplementedError('HMM.get_viterbi_value')
-        return self.viterbi  # fixed
+        # raise NotImplementedError('HMM.get_viterbi_value')
+        return self.viterbi.get((state, step))  # fixed
 
     # Access function for testing the backpointer data structure
     # For example model.get_backpointer_value('VERB',2) might be 'NOUN'
@@ -274,8 +338,8 @@ class HMM:
         :return: The state name to go back to at step-1
         :rtype: str
         """
-        #raise NotImplementedError('HMM.get_backpointer_value')
-        return self.backpointer  # fixed
+        # raise NotImplementedError('HMM.get_backpointer_value')
+        return self.backpointer.get((state, step))  # fixed
 
 
 def answer_question4b():
@@ -356,9 +420,9 @@ def answers():
     if hashlib.md5(''.join(map(lambda x: x[0],
                                train_data_universal[0] + train_data_universal[-1] + test_data_universal[0] +
                                test_data_universal[-1])).encode(
-            'utf-8')).hexdigest() != '164179b8e679e96b2d7ff7d360b75735':
+        'utf-8')).hexdigest() != '164179b8e679e96b2d7ff7d360b75735':
         print('!!!test/train split (%s/%s) incorrect, most of your answers will be wrong hereafter!!!' % (
-        len(train_data_universal), len(test_data_universal)), file=sys.stderr)
+            len(train_data_universal), len(test_data_universal)), file=sys.stderr)
 
     # Create instance of HMM class and initialise the training and test sets.
     model = HMM(train_data_universal, test_data_universal)
@@ -389,7 +453,7 @@ def answers():
     ######
     s = 'the cat in the hat came back'.split()
     model.initialise(s[0])
-    ttags = []  # fixme
+    ttags = ['DET','NOUN', 'ADP', 'DET','NOUN','VERB','ADV']  # fixed
     print("Tagged a trial sentence:\n  %s" % list(zip(s, ttags)))
 
     v_sample = model.get_viterbi_value('VERB', 5)
@@ -411,11 +475,11 @@ def answers():
 
         for ((word, gold), tag) in zip(sentence, tags):
             if tag == gold:
-                pass  # fix me
+                correct += 1  # fixed
             else:
-                pass  # fix me
+                incorrect += 1  # fixed
 
-    accuracy = 0.0  # fix me
+    accuracy = correct/(correct+incorrect)  # fixed
     print('Tagging accuracy for test set of %s sentences: %.4f' % (test_size, accuracy))
 
     # Print answers for 4b, 5 and 6
