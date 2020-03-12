@@ -228,8 +228,8 @@ class HMM:
                         min_cost = cost
                         min_arg = i
 
-                self.viterbi[state, t] = min_cost       # Update viterbi with min cost
-                self.backpointer[state, t] = min_arg    # Update backpointer with argmax cost
+                self.viterbi[state, t] = min_cost  # Update viterbi with min cost
+                self.backpointer[state, t] = min_arg  # Update backpointer with argmax cost
 
         # Add a termination step with cost based solely on cost of transition to </s> , end of sentence.
         # Reconstruct the tag sequence using the backpointer list.
@@ -252,7 +252,7 @@ class HMM:
                 min_arg = self.states.index(state)
 
         self.viterbi['</s>', num_w] = min_cost  # update viterbi
-        self.backpointer['</s>', num_w] = min_arg # update backpointer
+        self.backpointer['</s>', num_w] = min_arg  # update backpointer
 
         # Reconstruct best path tag sequence
         tags_ = []
@@ -284,6 +284,15 @@ class HMM:
         :rtype: float
         """
 
+        # Converting Negative Steps to Corresponding Positive Step.
+        max_step = -1
+        for k in self.viterbi:
+            curr_step=k[1]
+            if curr_step > max_step:
+                max_step = curr_step
+        if step < 0:
+            step = max_step + step
+
         return self.viterbi.get((state, step))
 
     # Access function for testing the backpointer data structure
@@ -301,6 +310,15 @@ class HMM:
         :return: The state name to go back to at step-1
         :rtype: str
         """
+        # Converting Negative Steps to Corresponding Positive Step.
+        max_step = -1
+        for k in self.backpointer:
+            curr_step = k[1]
+            if curr_step > max_step:
+                max_step = curr_step
+        if step < 0:
+            step = max_step + step
+
         backpointer = self.backpointer[state, step]
         return self.states[backpointer]
 
@@ -312,16 +330,33 @@ def answer_question4b():
     :rtype: list(tuple(str,str)), list(tuple(str,str)), str
     :return: your answer [max 280 chars]
     """
-    raise NotImplementedError('answer_question4b')
+    # raise NotImplementedError('answer_question4b')
 
     # One sentence, i.e. a list of word/tag pairs, in two versions
     #  1) As tagged by your HMM
     #  2) With wrong tags corrected by hand
-    tagged_sequence = 'fixme'
-    correct_sequence = 'fixme'
+    tagged_sequence = [('One', 'NUM'), ('of', 'ADP'), ('Nikita', 'X'), ("Khrushchev's", 'X'), ('most', 'X'),
+                       ('enthusiastic', 'X'), ('eulogizers', 'X'), (',', '.'),
+                       ('the', 'DET'), ("U.S.S.R.'s", 'X'), ('daily', 'X'), ('Izvestia', 'X'), (',', '.'),
+                       ('enterprisingly', 'X'), ('interviewed', 'X'), ('Red-prone', 'X'), ('Comedian', 'X'),
+                       ('Charlie', 'X'), ('Chaplin', 'X'),
+                       ('at', 'ADP'), ('his', 'DET'), ('Swiss', 'ADJ'), ('villa', 'NOUN'), (',', '.'),
+                       ('where', 'ADV'), ('he', 'PRON'), ('has', 'VERB'), ('been', 'VERB'), ('in', 'ADP'),
+                       ('self-exile', 'X'), ('since', 'X'), ('1952', 'X'), ('.', '.')]
+    correct_sequence = [('One', 'NUM'), ('of', 'ADP'), ('Nikita', 'NOUN'), ("Khrushchev's", 'NOUN'), ('most', 'ADV'),
+                        ('enthusiastic', 'ADJ'), ('eulogizers', 'NOUN'), (',', '.'),
+                        ('the', 'DET'), ("U.S.S.R.'s", 'NOUN'), ('daily', 'ADJ'), ('Izvestia', 'NOUN'), (',', '.'),
+                        ('enterprisingly', 'ADV'), ('interviewed', 'VERB'), ('Red-prone', 'ADJ'), ('Comedian', 'NOUN'),
+                        ('Charlie', 'NOUN'), ('Chaplin', 'NOUN'),
+                        ('at', 'ADP'), ('his', 'DET'), ('Swiss', 'ADJ'), ('villa', 'NOUN'), (',', '.'),
+                        ('where', 'ADV'), ('he', 'PRON'), ('has', 'VERB'), ('been', 'VERB'), ('in', 'ADP'),
+                        ('self-exile', 'NOUN'), ('since', 'ADP'), ('1952', 'NUM'), ('.', '.')]
     # Why do you think the tagger tagged this example incorrectly?
     answer = inspect.cleandoc("""\
-    fill me in""")[0:280]
+        The sentence has been tagged wrongly as it has a very complex sentence structure.
+        The tagger has failed to recognize the dependant clauses and tagged them without consideration to context.
+        Some words are too niche and are probably not included in the training data.
+        """)[0:280]
 
     return tagged_sequence, correct_sequence, answer
 
@@ -337,10 +372,14 @@ def answer_question5():
     :rtype: str
     :return: your answer [max 500 chars]
     """
-    raise NotImplementedError('answer_question5')
 
     return inspect.cleandoc("""\
-    fill me in""")[0:500]
+    Sentences with unrecognized words can be parsed using syntactic constraints of the grammar in order to 
+    disambiguate the role of each word. The constraint grammar uses the POS tags of surrounding words to 
+    decide the most likely reading of the unknown word. It will always perform better as sentences are subject 
+    to grammatical constraints that are always true.
+    
+    """)[0:500]
 
 
 def answer_question6():
@@ -352,10 +391,12 @@ def answer_question6():
     :rtype: str
     :return: your answer [max 500 chars]
     """
-    raise NotImplementedError('answer_question6')
 
     return inspect.cleandoc("""\
-    fill me in""")[0:500]
+    Using the original Brown Corpus tagset would result in finer granularity of sentence tags.
+    It would also mean that our data becomes more sparse i.e more zero transition probabilities.
+    It also significantly increases the perplexity of the tagging problem as the number of tags is much greater.
+    """)[0:500]
 
 
 # Useful for testing
@@ -431,29 +472,16 @@ def answers():
     correct = 0
     incorrect = 0
 
-    sent = []   #####
-    o = []      #####
-
     for sentence in test_data_universal:
         s = [word.lower() for (word, tag) in sentence]
         model.initialise(s[0])
         tags = model.tag(s)
-        #print (type(sentence))
+        # print (type(sentence))
         for ((word, gold), tag) in zip(sentence, tags):
             if tag == gold:
                 correct += 1
             else:
                 incorrect += 1
-                #########
-                if len(o)<=10:
-                    sent.append(sentence)
-                    print(word,gold,tag)
-
-                    for e in sent:
-                        if e not in o:
-                            o.append(e)
-    for x in o:
-        print(x)
 
     accuracy = correct / (correct + incorrect)
     print('Tagging accuracy for test set of %s sentences: %.4f' % (test_size, accuracy))
